@@ -1,20 +1,10 @@
 # empresa.py
-import uuid
+from models import Empresa
 from storage import salvar_json, carregar_json
 
 ARQUIVO_EMPRESAS = "empresas.json"
 
-class Empresa:
-    def __init__(self, nome, saldo_inicial=0):
-        self.id = str(uuid.uuid4())  # Gera ID único
-        self.nome = nome
-        self.saldo = saldo_inicial
-
-    def to_dict(self):
-        return {"id": self.id, "nome": self.nome, "saldo": self.saldo}
-
-
-class EmpresaService:
+class Empresa_Service:
     def __init__(self):
         self.empresas = carregar_json(ARQUIVO_EMPRESAS)
 
