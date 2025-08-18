@@ -1,1 +1,1 @@
-from .storage import salvar_json, carregar_json
+from .storage import salvar_json, carregar_json, excluir_registro

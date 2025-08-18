@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 
 class Empresa(BaseModel):
-    nome: str
-    saldo: float = 0
+    razao_social: str
+    nome_fantasia: str
+    cnpj: int
+    tipo: str
+    senha: str

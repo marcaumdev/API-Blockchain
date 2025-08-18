@@ -1,7 +1,7 @@
 from models.bloco import Bloco
 from storage.storage import salvar_json, carregar_json
 
-ARQUIVO_BLOCKCHAIN = "blockchain.json"
+ARQUIVO_BLOCKCHAIN = "storage/blockchain.json"
 
 class Blockchain:
     def __init__(self):
