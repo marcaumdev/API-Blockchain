@@ -14,7 +14,7 @@ def criar_contrato(dados: Contrato):
         raise HTTPException(status_code=404, detail="Empresa não encontrada")
 
     blockchain.adicionar_bloco({
-        "tipo": "contrato",
+        "tipo": dados.tipo,
         "empresa": empresa["nome"],
         "descricao": dados.descricao,
         "valor": dados.valor

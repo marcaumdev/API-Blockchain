@@ -1,10 +1,15 @@
 # empresa.py
 from models import Empresa
 from storage import salvar_json, carregar_json, excluir_registro
+import bcrypt
+import jwt
+from datetime import datetime, timedelta
 
 ARQUIVO_EMPRESAS = "storage/empresas.json"
+SECRET_KEY = "BlockchainAPISecretKey"
 
 class Empresa_Service:
+
     def __init__(self):
         self.empresas = carregar_json(ARQUIVO_EMPRESAS)
 
@@ -15,7 +20,10 @@ class Empresa_Service:
         return self.empresas
 
     def criar_empresa(self, razao_social, nome_fantasia, cnpj, tipo, senha):
-        empresa = Empresa(razao_social, nome_fantasia, cnpj, tipo, senha)
+
+        senha_hash = bcrypt.hashpw(senha.encode(), bcrypt.gensalt()).decode()
+
+        empresa = Empresa(razao_social, nome_fantasia, cnpj, tipo, senha_hash)
         self.empresas.append(empresa.to_dict())
         self.salvar()
         return empresa.to_dict()
@@ -42,3 +50,17 @@ class Empresa_Service:
     
     def excluir_empresa_por_cnpj(self, cnpj):
         return excluir_registro(ARQUIVO_EMPRESAS, "cnpj", cnpj)
+
+    def autenticar_empresa(self, cnpj, senha):
+        usuario = next((u for u in self.empresas if u["cnpj"] == cnpj), None)
+        if usuario and bcrypt.checkpw(senha.encode(), usuario["senha_hash"].encode()):
+            return usuario
+        return None
+
+    def criar_token(usuario):
+        payload = {
+            "sub": usuario["username"],
+            "tipo": usuario["tipo"],
+            "exp": datetime.utcnow() + timedelta(hours=12)
+        }
+        return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
