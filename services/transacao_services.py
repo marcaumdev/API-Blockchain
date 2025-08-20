@@ -1,4 +1,4 @@
-from services import Fila_Service
+from services.fila_services import Fila_Service
 
 service = Fila_Service()
 

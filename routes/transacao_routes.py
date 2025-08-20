@@ -2,28 +2,28 @@ from fastapi import APIRouter, HTTPException
 from services import Empresa_Service
 from models import Blockchain
 from DTO import Transacao
+from services import Transacao_Service, Fila_Service
 
 router = APIRouter(prefix="/transacao", tags=["Transações"])
-empresas_service = Empresa_Service()
-blockchain = Blockchain()
+transacao_service = Transacao_Service()
+fila_service = Fila_Service()
 
 @router.post("")
 def criar_transacao(dados: Transacao):
-    remetente = empresas_service.buscar_por_id(dados.remetente_id)
-    destinatario = empresas_service.buscar_por_id(dados.destinatario_id)
-    
-    if not remetente or not destinatario:
-        raise HTTPException(status_code=404, detail="Empresa não encontrada")
-    if remetente["saldo"] < dados.valor:
-        raise HTTPException(status_code=400, detail="Saldo insuficiente")
+    try:
+        transacao = transacao_service.criar_transacao(dados)
+        return {"message": "Transação enviada para fila de aprovação", "transacao": transacao}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-    empresas_service.atualizar_saldo(dados.remetente_id, -dados.valor)
-    empresas_service.atualizar_saldo(dados.destinatario_id, dados.valor)
+@router.get("/fila")
+def listar_fila_transacoes():
+    return fila_service.listar_fila("transacoes")
 
-    blockchain.adicionar_bloco({
-        "tipo": "transacao",
-        "remetente": remetente["nome"],
-        "destinatario": destinatario["nome"],
-        "valor": dados.valor
-    })
-    return {"mensagem": "Transação registrada com sucesso"}
+@router.post("/aprovar/{transacao_id}")
+def aprovar_transacao(transacao_id: str):
+    try:
+        bloco = fila_service.aprovar_item(transacao_id, tipo="transacao")
+        return {"message": "Transação aprovada e adicionada à blockchain", "bloco": bloco}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
