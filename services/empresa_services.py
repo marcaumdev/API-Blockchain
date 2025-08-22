@@ -1,4 +1,5 @@
 # empresa.py
+from DTO.login import Login
 from models import Empresa
 from storage import salvar_json, carregar_json, excluir_registro
 import bcrypt
@@ -51,16 +52,16 @@ class Empresa_Service:
     def excluir_empresa_por_cnpj(self, cnpj):
         return excluir_registro(ARQUIVO_EMPRESAS, "cnpj", cnpj)
 
-    def autenticar_empresa(self, cnpj, senha):
-        usuario = next((u for u in self.empresas if u["cnpj"] == cnpj), None)
-        if usuario and bcrypt.checkpw(senha.encode(), usuario["senha_hash"].encode()):
+    def autenticar_empresa(self, dados: Login):
+        usuario = next((u for u in self.empresas if u["cnpj"] == dados.cnpj), None)
+        if usuario and bcrypt.checkpw(dados.senha.encode(), usuario["senha"].encode()):
             return usuario
         return None
 
-    def criar_token(usuario):
+    def criar_token(self, empresa: Empresa):
         payload = {
-            "sub": usuario["username"],
-            "tipo": usuario["tipo"],
+            "sub": empresa["cnpj"],
+            "tipo": empresa["tipo"],
             "exp": datetime.utcnow() + timedelta(hours=12)
         }
         return jwt.encode(payload, SECRET_KEY, algorithm="HS256")

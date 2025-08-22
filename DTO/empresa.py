@@ -3,6 +3,6 @@ from pydantic import BaseModel
 class Empresa(BaseModel):
     razao_social: str
     nome_fantasia: str
-    cnpj: int
+    cnpj: str
     tipo: str
     senha: str
