@@ -5,11 +5,11 @@ from DTO import Empresa, Atualizar_Saldo
 router = APIRouter(prefix="/empresa", tags=["Empresas"])
 empresas_service = Empresa_Service()
 
-@router.get("", dependencies=[Depends(somente_governo)])
+@router.get("", dependencies=[Depends(autenticacao)])
 def listar_empresas():
     return empresas_service.listar()
 
-@router.get("/{id}", dependencies=[Depends(somente_governo)])
+@router.get("/{id}", dependencies=[Depends(autenticacao)])
 def buscar_por_empresa_id(id):
     return empresas_service.buscar_por_id(id)
 

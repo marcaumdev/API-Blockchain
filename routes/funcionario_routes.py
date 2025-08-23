@@ -7,11 +7,11 @@ from services import autenticacao, somente_governo
 router = APIRouter(prefix="/funcionarios", tags=["Funcionários"])
 service = Funcionario_Service()
 
-@router.get("", dependencies=[Depends(somente_governo)])
+@router.get("", dependencies=[Depends(autenticacao)])
 def listar_funcionarios():
     return service.listar()
 
-@router.get("/{funcionario_id}", dependencies=[Depends(somente_governo)])
+@router.get("/{funcionario_id}", dependencies=[Depends(autenticacao)])
 def buscar_funcionario(funcionario_id: int):
     funcionario = service.buscar_por_id(funcionario_id)
     if not funcionario:

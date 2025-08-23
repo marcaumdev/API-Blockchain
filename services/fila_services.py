@@ -1,3 +1,4 @@
+import uuid
 from storage.storage import salvar_json, carregar_json
 from models import Blockchain
 
@@ -16,7 +17,8 @@ class Fila_Service:
         Adiciona um item (transação ou contrato) na fila para aprovação.
         """
         item = {
-            "tipo": tipo,      # "transacao" ou "contrato"
+            "id": str(uuid.uuid4()),  # id único
+            "tipo": tipo,             # "transacao" ou "contrato"
             "dados": dados,
             "status": "PENDENTE"
         }
@@ -24,21 +26,27 @@ class Fila_Service:
         self.salvar()
         return item
 
-    def listar_fila(self):
+    def listar_fila(self, tipo: str = None, incluir_rejeitados=False):
         """
-        Retorna todos os itens pendentes na fila.
+        Retorna itens da fila (por tipo e status).
+        - Se tipo=None, retorna todos.
+        - Por padrão, retorna só pendentes, mas pode incluir rejeitados.
         """
-        return [item for item in self.fila if item["status"] == "PENDENTE"]
+        return [
+            item for item in self.fila
+            if (tipo is None or item["tipo"] == tipo)
+            and (item["status"] == "PENDENTE" or (incluir_rejeitados and item["status"] == "REJEITADO"))
+        ]
 
-    def aprovar_item(self, index):
+    def aprovar_item(self, item_id: str):
         """
-        Aprova um item específico da fila (por índice).
+        Aprova um item específico da fila (por id).
         O item é adicionado à blockchain e marcado como 'APROVADO'.
         """
-        if index < 0 or index >= len(self.fila):
-            return {"erro": "Índice inválido"}
+        item = next((i for i in self.fila if i["id"] == item_id), None)
+        if not item:
+            return {"erro": "Item não encontrado"}
 
-        item = self.fila[index]
         if item["status"] != "PENDENTE":
             return {"erro": "Item já processado"}
 
@@ -53,14 +61,14 @@ class Fila_Service:
         self.salvar()
         return item
 
-    def rejeitar_item(self, index):
+    def rejeitar_item(self, item_id: str):
         """
-        Rejeita um item da fila.
+        Rejeita um item da fila (por id).
         """
-        if index < 0 or index >= len(self.fila):
-            return {"erro": "Índice inválido"}
+        item = next((i for i in self.fila if i["id"] == item_id), None)
+        if not item:
+            return {"erro": "Item não encontrado"}
 
-        item = self.fila[index]
         if item["status"] != "PENDENTE":
             return {"erro": "Item já processado"}
 
