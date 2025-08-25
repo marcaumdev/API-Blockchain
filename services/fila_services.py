@@ -20,7 +20,7 @@ class Fila_Service:
         Adiciona um item (transação ou contrato) na fila para aprovação.
         """
         
-        item = Item_Fila(str(uuid.uuid4()), tipo, "PENDENTE", dados)
+        item = Item_Fila( tipo, "PENDENTE", dados)
         self.fila.append(item.to_dict())
         self.salvar()
         return item

@@ -6,11 +6,11 @@ from services import somente_governo, autenticacao
 router = APIRouter(prefix="/fila", tags=["Fila"])
 fila_service = Fila_Service()
 
-@router.get("/fila/{tipo}", dependencies=[Depends(autenticacao)])
-def listar_fila_transacoes(tipo:str):
+@router.get("/{tipo}", dependencies=[Depends(autenticacao)])
+def listar_fila_transacoes(tipo:str = None):
     return fila_service.listar_fila(tipo)
 
-@router.get("/fila/rejeitados", dependencies=[Depends(autenticacao)])
+@router.get("/rejeitados/{tipo}", dependencies=[Depends(autenticacao)])
 def listar_fila_transacoes(tipo:str):
     return fila_service.listar_fila(tipo, True)
 

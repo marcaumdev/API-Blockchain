@@ -8,6 +8,17 @@
             "descricao": "teste de transa\u00e7\u00e3o para aprova\u00e7\u00e3o",
             "valor": 20000.0
         },
-        "status": "PENDENTE"
+        "status": "APROVADO"
+    },
+    {
+        "id": "66ceb328-01dc-4a2c-b0b0-d30c136ebc93",
+        "tipo": "transacao",
+        "status": "REJEITADO",
+        "dados": {
+            "remetente_cnpj": "1",
+            "destinatario_cnpj": "1",
+            "descricao": "transacao feita",
+            "valor": 1.0
+        }
     }
 ]
