@@ -1,8 +1,11 @@
 import uuid
+from services import Empresa_Service
 from storage.storage import salvar_json, carregar_json
-from models import Blockchain
+from models import Blockchain, Item_Fila
 
 ARQUIVO_FILA = "storage/fila.json"
+empresas_service = Empresa_Service()
+
 
 class Fila_Service:
     def __init__(self):
@@ -16,13 +19,9 @@ class Fila_Service:
         """
         Adiciona um item (transação ou contrato) na fila para aprovação.
         """
-        item = {
-            "id": str(uuid.uuid4()),  # id único
-            "tipo": tipo,             # "transacao" ou "contrato"
-            "dados": dados,
-            "status": "PENDENTE"
-        }
-        self.fila.append(item)
+        
+        item = Item_Fila(str(uuid.uuid4()), tipo, "PENDENTE", dados)
+        self.fila.append(item.to_dict())
         self.salvar()
         return item
 
@@ -49,6 +48,8 @@ class Fila_Service:
 
         if item["status"] != "PENDENTE":
             return {"erro": "Item já processado"}
+
+        empresas_service.atualizar_saldo(item["dados"]["destinatario_cnpj"], item["dados"]["valor"])
 
         # cria bloco na blockchain
         self.blockchain.adicionar_bloco({

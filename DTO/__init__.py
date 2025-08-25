@@ -4,3 +4,4 @@ from .contrato import Contrato
 from .atualizar_saldo import Atualizar_Saldo
 from .funcionario import Funcionario
 from .login import Login
+from .item_fila import Item_Fila

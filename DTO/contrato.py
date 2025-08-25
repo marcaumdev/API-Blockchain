@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class Contrato(BaseModel):
-    empresa_id: str
+    destinatario_cnpj: str
     descricao: str
     tipo: str
     valor: float
